@@ -1,0 +1,176 @@
+// Project 2 - Parser
+// README
+// Tan Nguyen
+// ntnhmc@umsystem.edu
+// April 6, 2022
+
+
+I don't have any incomplete requests from project 2
+
+Summary: Implement the parser
+	o Implement the parser in a separate file (parser.c and parser.h) including the initial auxiliary parser() function and all nonterminal functions.  
+	o Call the parser function from main.  
+	o The parser function generates error or returns the parse tree to main.  
+	o In testTree.c (and testTree.h) implement a printing function using preorder traversal with indentations as before for 
+	testing purposes (2 spaces per level, print the node's label and any tokens from the node, then children left to right; one node per line).  
+	o Call the printing function from main immediately after calling the parser and returning the tree.(using the preorder)
+
+I. What I have achieved in this project
+
+1. Use suffix rules or pattern rules in Makfile
+2. Invocation
+	./frontEnd       // read from the keyboard until simulated keyboard EOF , then CRTL + D to end.
+	./frontEnd filename // reads from filename 
+	
+If user input of three or more strings on the command line should also generate this error message:
+	Error: Expected 1 or no arguments
+	Try './frontEnd -h' for more information.
+		
+I have provided the file to test the program. There are all 5 test files: test, test1, test2, test3, test4.
+Where test4 will be the file containing the grammatically incorrect structure
+
+WHEN YOU run the program, just enter the file name, DONT enter the prefix ".txt"
+
+3. Command line parsing
+	I add option -h: Help. It will be used to show how to run the program.
+		
+	------------------------------------------------------------------------------------
+	How to implement program::
+	Invocation:  ./frontEnd [file]
+	There are three ways to run the program:
+	1. ./frontEnd to prompt user to enter from keyboard.
+	2. ./frontEnd < [filename] to direct inout file to scanner exectuable program.
+	3. ./frontEnd [filename] // without .input suffix in file name.
+	--------------------------------------------------------------------------------------
+	
+4. Program output
+---------------------------------------------------------------------------------------------------------------------
+Testing file content in test.txt:
+	Name prog1 
+	Spot prog1 
+	Place 
+	Name id1   
+	Home 
+	Show prog1 
+	
+Output: 
+	Parser Success!
+	 <S> prog1 prog1
+	  <R>
+		<A> id1
+		<B>
+	  <E> prog1
+---------------------------------------------------------------------------------------------------------------------
+Testing file content in test1.txt:
+	Name prog2 
+	Spot prog2 
+	Place 
+	Name id2 
+	/ id1 
+	Show id2   
+	Home 
+	Show prog2
+
+Output:
+	Parser Success!
+	 <S> prog2 prog2
+	  <R>
+		<A> id2
+		<B> /
+		  <Z> id1
+		  <B> id2
+			<B>
+	  <E> prog2
+--------------------------------------------------------------------------------------------------------------------
+Testing file content in test2.txt:
+	Name prog3 
+	Spot prog3 
+	Place 
+	Name id1 
+	. 
+	Here 2 There 
+	. 
+	Show id2   
+	Home 
+	Show prog3 
+	
+Output:
+	Parser Success!
+	 <S> prog3 prog3
+	  <R>
+		<A> id1
+		<B> . .
+		  <C> 2
+		  <B> id2
+			<B>
+	  <E> prog3
+------------------------------------------------------------------------------------------------------------------
+Testing file content in test3.txt:
+	Name prog4 
+	Spot prog4 
+	Place 
+	Name id2 
+	. 
+	{ If id2 <- 5 . Show id2 } 
+	.  
+	Home 
+	Show prog4 
+	 
+Output: 
+	Parser Success!
+	 <S> prog4 prog4
+	  <R>
+		<A> id2
+		<B> . .
+		  <C> { id2 }
+			<T> <-
+			<W> 5 .
+			<D> id2
+		  <B>
+	  <E> prog4
+
+---------------------------------------------------------------------------------------------------------------------
+Testing file content in test4.txt:
+	Name prog4 
+	Spot prog4 
+	Name id2 
+	. 
+	{ If id2 <- 5 . Show id2 } 
+	.  
+	Home 
+	Show prog4 
+
+Output:
+Error <R>: Invalid Token, Expected PLACE TOKEN for FIRST SET of <R> -- NAME KEYWORD Received At Line 3
+--------------------------------------------------------------------------------------------------------------------
+Testing file content in test5.txt:
+	Place Name prog1 
+	Spot prog1 
+	Place 
+	Name id1   
+	Home 
+	Show prog1
+
+Output:
+	Error <S>: Invalid Token, Expected NAME TOKEN for FIRST SET of <S>-- PLACE KEYWORD Received At Line 1
+
+--------------------------------------------------------------------------------------------------------------------
+II. BNF
+
+	<S>   ->    Name Identifier Spot Identifier <R> <E>  
+	<R>   ->    Place <A> <B> Home 
+	<E>   ->    Show Identifier 
+	<A>   ->    Name Identifier  
+	<B>   ->    empty |  .  <C> . <B> | <D> <B> 
+	<C>   ->    <F> | <G> 
+	<D>   ->    <H> | <J> | <K> | <L>  | <E> | <F> 
+	<F>   ->    { If  Identifier <T> <W> <D> } | { Do Again <D> <T> <W> } 
+	<G>   ->    Here Number There  
+	<T>   ->    <<  |  <-   
+	<V>   ->    +   |   %   |   &  
+	<H>   ->    /  <Z> 
+	<J>   ->    Assign Identifier <D> 
+	<K>   ->    Spot Number Show Number |  Move Identifer Show Identifier 
+	<L>   ->    Flip Identifier  
+	<W>   ->    Number  <V>  Number  |   Number . 
+	<Z>   ->    Identifier  |  Number               

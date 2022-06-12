@@ -1,0 +1,8 @@
+Name prog4 
+Spot prog4 
+Name id2  
+.
+{ If id2 <- 5 . Show id2} 
+.  
+Home 
+Show prog4 
